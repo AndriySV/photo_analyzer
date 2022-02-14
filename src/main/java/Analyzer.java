@@ -11,23 +11,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Stream;
 
 public class Analyzer {
 
-//    static String pathStr = "C:\\Docker\\test.txt";
-//    static String pathStr = "C:\\IdeaProjects\\Dev";
-    static String pathStr = "D:\\Фото Відео";
+    private static final String trgDir = "C:\\Restored photos" + "\\";
+    private static final String srcDir = "C:\\Restored photos\\temp";
 
     public static void main(String[] args) throws IOException {
         Map<String, List<Path>> filesByYear = new HashMap<>();
 
-        try (Stream<Path> paths = Files.walk(Paths.get(pathStr))) {
+        try (Stream<Path> paths = Files.walk(Paths.get(srcDir))) {
             paths
                     .filter(Files::isRegularFile)
                     .forEach(path -> {
@@ -65,10 +60,9 @@ public class Analyzer {
     }
 
     private static void makeCopy(Map<String, List<Path>> filesByYear) {
-String baseDir = "C:\\photo\\";
 
         for (Map.Entry<String, List<Path>> entry : filesByYear.entrySet()) {
-            File dir = new File(baseDir + entry.getKey());
+            File dir = new File(trgDir + entry.getKey());
             dir.mkdir();
 
             List<Path> paths = entry.getValue();
@@ -85,7 +79,7 @@ String baseDir = "C:\\photo\\";
 
     private static String getPhotoTakenDate(Path path) throws ImageProcessingException, IOException {
         Metadata metadata = ImageMetadataReader.readMetadata(path.toFile());
-        String year = "";
+        String year = "XXXX";
         ExifThumbnailDirectory firstDirectoryOfType = metadata.getFirstDirectoryOfType(ExifThumbnailDirectory.class);
         if (firstDirectoryOfType != null) {
             for (Tag tag : firstDirectoryOfType.getTags()) {
